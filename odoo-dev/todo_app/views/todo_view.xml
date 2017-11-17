@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_form_todo_task" model="ir.ui.view">
+            <field name="name">To-do Task Form</field>
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="do_toggle_done" type="object"
+                                string="Toggle-Done" class="oe_highlight"/>
+                        <button name="do_clear_done" type="object"
+                                string="Clear-All-Done"/>
+                        <button name="but_ok" string="OK"/>
+                    </header>
+                        <sheet>
+                        <group name="group_top" string="TEST_1">
+                            <group name="group_left">
+                                <field name="name"/>
+                                <field name="test"/>
+                                <field name="title"/>
+                            </group>
+                            <group name="group_right">
+                                <field name="is_done"/>
+                                <field name="active" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_tree_todo_task" model="ir.ui.view">
+            <field name="name">To-do Task Tree</field>
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <tree colors="gray:is_done==True">
+                    <field name="name"/>
+                    <field name="title"/>
+                     <field name="test"/>
+                    <field name="is_done"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_filter_todo_task" model="ir.ui.view">
+            <field name="name">To-do Task Filter</field>
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <filter string="Not Done"
+                            domain="[('is_done','=',False)]"/>
+                    <filter string="Done"
+                            domain="[('is_done','!=',False)]"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window"
+                id="action_todo_task">
+            <field name="name">To-do Task</field>
+            <field name="res_model">todo.task</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_form_todo_test" model="ir.ui.view">
+            <field name="name">To-do Task Form Test</field>
+            <field name="model">todo.task.test</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group name="group_top" string="姓名">
+                            <field name="name"></field>
+                            <field name="sequence"></field>
+                        </group>
+                        <group name="group_low" string="请假明细">
+                            <!--<field name="qingjia_ids"></field>-->
+
+                        </group>
+                        <notebook>
+                            <page string="描述1111">
+                                <group>
+                                    <field name="test_ids" nolabel="1"></field>
+                                </group>
+                            </page>
+                            <page string="描述2222">
+                                <group>
+                                    <field name="name"></field>
+                                    <field name="sequence"></field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_tree_todo_test" model="ir.ui.view">
+            <field name="name">To-do Task Tree</field>
+            <field name="model">todo.task.test</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="sequence"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window"
+                id="action_todo_test">
+            <field name="name">To-do Test</field>
+            <field name="res_model">todo.task.test</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        Action to open To-do Task list
+        <!--<act_window id="action_todo_task"-->
+        <!--name="To-do Task"-->
+        <!--res_model="todo.task"-->
+        <!--view_mode="tree,form"/>-->
+
+        <!-- Menu item to open To-do Task list -->
+        <menuitem id="menu_todo_task" name="项目" sequence="20" action="action_todo_task"/>
+        <menuitem id="second_menu_1" name="项目一" parent="menu_todo_task" action="action_todo_task"></menuitem>
+        <menuitem id="second_menu_2" name="项目二" parent="menu_todo_task" action="action_todo_test"></menuitem>
+
+    </data>
+</openerp>

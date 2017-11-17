@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--add kanban mode to the menu actions-->
+    <act_window id="todo_app.action_todo_task" name="To-Do Tasks"
+                res_model="todo.task" view_mode="kanban,tree,form,calendar,graph,pivot"
+                context="{'search_default_filter_my_tasks': False}"/>
+    <!--add kanban view-->
+    <record id="To-do Task Kanban" model="ir.ui.view">
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <!--<kanban default_group_by="stage_id" class="o_kanban_small_column">-->
+            <kanban>
+                <!-- Fields to use in expressions -->
+                <field name="stage_id"/>
+                <field name="priority"/>
+                <field name="is_done"/>
+                <field name="tag_ids"/>
+                <field name="color"/>
+                <!--...add other used fields-->
+                <templates>
+                    <t t-name="kanban-box">
+                        <!--set the kanban color-->
+                        <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click">
+                            <div class="o_dropdown_kanban dropdown">
+                                <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
+                                    <span class="fa fa-bars fa-lg"/>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <!--edit and delete actions, if available:-->
+                                    <t t-if="widget.editable">
+                                        <li>
+                                            <a type="edit">Edit</a>
+                                        </li>
+                                    </t>
+                                    <t t-if="widget.deletable">
+                                        <li>
+                                            <a type="delete">Delete</a>
+                                        </li>
+                                    </t>
+                                    <!--Call a server-side Model method:-->
+                                    <t t-if="!record.is_done.value">
+                                        <li>
+                                            <a name="do_toggle_done" type="object">Set as Done</a>
+                                        </li>
+                                    </t>
+                                    <!--Color picker option:-->
+                                    <li>
+                                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="o_kanban_image">
+                                <!--<img t-att-src="kanban_image('fleet.vehicle', 'image_small', record.id.value)"/>-->
+                                <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)"
+                                     class="oe_kanban_image oe_kanban_avatar_smallbox"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <!--<div>-->
+                                <!--<t t-foreach="record.tag_ids.raw_value" t-as="rec">-->
+                                <!--<t t-esc="rec"/>-->
+                                <!--</t>-->
+                                <!--</div>-->
+                                <div t-if="record.name.raw_value">
+                                    名字：
+                                    <field name="name"/>
+                                </div>
+                                <ul>
+                                    <li>
+                                        作者：
+                                        <field name="user_id"/>
+                                    </li>
+                                    <!--<span t-attf-class="oe_kanban_text{{record.date_deadline.raw_value and !(record.date_deadline.raw_value > (new Date())) ? '_red' : '_black' }}">-->
+                                    <!--<field name="date_deadline"/>-->
+                                    <!--<li>Estimate-->
+                                    <!--<field name="effort_estimate"/>-->
+                                    <!--</li>-->
+                                    <!--</span>-->
+                                    <!--如果逾期，日期变为红色-->
+                                    <t t-set="red_or_black"
+                                       t-value="record.date_deadline.raw_value and record.date_deadline.raw_value lte (new Date()) ? 'oe_kanban_text_red' : ''"/>
+                                    <span t-att-class="red_or_black">
+                                        时间：
+                                        <field name="date_deadline"/>
+                                    </span>
+                                </ul>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_footer">
+                                    <div class="oe_kanban_footer_left">
+                                        <field name="priority" widget="priority"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <!-- Right hand footer...-->
+                                        <field name="kanban_state" widget="kanban_state_selection"/>
+                                    </div>
+                                </div>
+
+                                <div class="oe_clear"/>
+                            </div>
+                        </div>
+
+                        <!--<div>-->
+                        <!--<t t-foreach="record.message_follower_ids.raw_value.slice(0, 3)" t-as="rec">-->
+                        <!--<img t-att-src="kanban_image('res.partner', 'image_small', rec)"-->
+                        <!--class="oe_kanban_image oe_kanban_avatar_smallbox"/>-->
+                        <!--</t>-->
+                        <!--</div>-->
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

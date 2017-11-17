@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_form_todo_task_ui"
+                model="ir.ui.view">
+            <field name="model">todo.task</field>
+            <field name="priority">15</field>
+            <field name="arch" type="xml">
+                <form>
+                    <!--顶部标题-->
+                    <header>
+                        <field name="stage_state" invisible="True"/>
+                        <button name="do_toggle_done" type="object"
+                                attrs="{'invisible':[('stage_state','in',['done','cancel'])]}"
+                                string="Toggle Done" class="oe_highlight"/>
+                        <!-- Add stage statusbar:  ... -->
+
+                        <field name="stage_id"
+                               widget="statusbar"
+                               clickable="True"
+                               options="{'fold_field': 'fold'}"/>
+                    </header>
+                    <!--内容的表格-->
+                    <sheet>
+                        <!--按钮区域-->
+                        <div name="buttons" class="oe_right oe_button_box">
+                            <button class="oe_stat_button"
+                                    type="action" icon="fa-tasks"
+                                    name="%(todo_app.action_todo_task)d"
+                                    string=""
+                                    context="{'search_default_user_id': user_id, 'default_user_id': user_id}"
+                                    help="Other to-dos for this user">
+                                <field string="To-dos" name="user_todo_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <!--标题和子标题-->
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+
+                            <h3>
+                                <span class="oe_read_only"> By </span>
+                                <label for="user_id" class="oe_edit_only"/>
+                                <field name="user_id" class="oe_inline"/>
+                            </h3>
+                        </div>
+
+                        <!--组织表单中的内容-->
+                        <group name="group_top">
+                            <field name="is_done"/>
+                            <group name="group_left">
+                                <field name="date_deadline"
+                                       attrs="{'invisible':[('is_done','=', True)]}"/>
+                                <separator string="Reference"/>
+                            </group>
+                            <group name="group_right">
+                                <field name="refers_to"/>
+                                <field name="stage_id"/>
+                                <field name="tag_ids" widget="many2many_tags"/>
+                                <field name="stage_state"/>
+                            </group>
+                        </group>
+                        <!--标签笔记本-->
+                        <!--<notebook>
+                            <page string="Whiteboard" name="whiteboard">
+                                <field name="docs"/>
+                            </page>
+                            <page name="second_page">
+                                &lt;!&ndash; Second page content &ndash;&gt;
+                            </page>
+                        <notebook>-->
+                    </sheet>
+                    <!-- History and communication: -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <!--搜索视图-->
+        <record id="todo_app.view_filter_todo_task"
+                model="ir.ui.view">
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <filter name="filter_not_done" string="Not Done"
+                            domain="[('is_done','=',False)]"/>
+                    <filter name="filter_done" string="Done"
+                            domain="[('is_done','!=',False)]"/>
+                    <separator/>
+                    <filter name="group_user" string="By User"
+                            context="{'group_by':'user_id'}"/>
+                </search>
+            </field>
+        </record>
+        <!--日历视图-->
+        <record id="view_calendar_todo_task" model="ir.ui.view">
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <calendar date_start="date_deadline" color="user_id"
+                          display="[name], Stage [stage_id]">
+                    <field name="name"></field>
+                    <field name="stage_id"/>
+                </calendar>
+            </field>
+        </record>
+        <!--甘特视图-->
+        <record id="view_gantt_todo_task" model="ir.ui.view">
+            <field name="name">view_gantt_todo_task</field>
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <gantt date_start="date_deadline" default_group_by="user_id"/>
+            </field>
+        </record>
+        <!--图表视图-->
+        <record id="view_graph_todo_task" model="ir.ui.view">
+            <field name="name">view_graph_todo_task</field>
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <graph type="pivot">
+                    <field name="stage_id" type="col"/>
+                    <field name="user_id"/>
+                    <field name="date_deadline" interval="week"/>
+                    <!--<field name="effort_estimate" type="measure"/>-->
+                </graph>
+            </field>
+        </record>
+        <!--透视视图-->
+        <record id="view_pivot_todo_task" model="ir.ui.view">
+            <field name="model">todo.task</field>
+            <field name="arch" type="xml">
+                <pivot>
+                    <field name="stage_id" type="col"/>
+                    <field name="user_id"/>
+                    <field name="date_deadline" interval="week"/>
+                    <field name="effort_estimate" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_form_todo_task_stage_ui" model="ir.ui.view">
+            <field name="name">To-do Stage Form</field>
+            <field name="model">todo.task.stage</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="state"/>
+                            <field name="date_effective"/>
+                            <field name="date_changed"/>
+                            <field name="fold"/>
+                            <field name="sequence"/>
+                            <field name="perc_complete"/>
+                            <field name="desc"/>
+                            <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;, &quot;size&quot;: [90, 90]}"/>
+                        </group>
+                        <notebook>
+                            <page string="Documentation" name="whiteboard">
+                                <field name="docs"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_todo_stage"
+                    name="To-Do Task Stages"
+                    res_model="todo.task.stage"
+                    view_mode="tree,form"/>
+        <act_window id="todo_app.action_todo_task"
+                    name=" To-Do Tasks"
+                    res_model="todo.task"
+                    view_mode="tree,form,calendar,gantt,graph"
+                    target="current"
+                    context="{'default_user_id': uid}"
+                    domain="[]"
+                    limit="80"/>
+        <act_window id="action_todo_task_stage"
+                    name="Task Stages"
+                    res_model="todo.task.stage"
+                    src_model="todo.task"
+                    multi="True"/>
+
+        <menuitem id="menu_todo_task_main"
+                  name="To-Do"/>
+        <menuitem id="todo_app.menu_todo_task"
+                  name="To-Do Tasks"
+                  parent="menu_todo_task_main"
+                  sequence="10"
+                  action="todo_app.action_todo_task"/>
+        <menuitem id="menu_todo_task_stage"
+                  name="To-Do Stages"
+                  parent="menu_todo_task_main"
+                  sequence="20"/>
+        <menuitem id="menu_todo_task_stage_1"
+                  name="项目明细"
+                  parent="menu_todo_task_stage"
+                  action="action_todo_stage"/>
+
+
+    </data>
+</openerp>
