@@ -7,7 +7,7 @@ class TodoTask(models.Model):
     title = fields.Char('Title')
     is_done = fields.Boolean('Done?')
     active = fields.Boolean('Active?', default=True)
-
+    test = fields.Char('test')
     stage_id = fields.Many2one('todo.task.test', 'Stage')
 
     @api.one
